@@ -76,7 +76,7 @@ def type_input(message, width, validation_func=None):
     message_display = text.decorate(message, color="blue")
     message_display = text.center(message_display)
 
-    error_msg = ''
+    error_msg = ' '
 
 
     chars = []
@@ -98,12 +98,15 @@ def type_input(message, width, validation_func=None):
         )
         formatted_chars = text.decorate(formatted_chars, underline=1)
         formatted_chars = text.center(formatted_chars)
+        
+        formatted_error_msg = text.decorate(error_msg, color="red")
+        formatted_error_msg = text.center(formatted_error_msg)
 
 
         print('\n' * margin_top)
         print(message_display + '\n')
         print(formatted_chars)
-        print('\n' + error_msg)
+        print('\n' + formatted_error_msg)
         print('\n' * margin_bottom)
 
 
@@ -120,21 +123,27 @@ def type_input(message, width, validation_func=None):
             if cursor_pos:
                 chars.pop(cursor_pos - 1)
                 cursor_pos -= 1
+                error_msg = validation_func([*chars], key_press)
 
         elif key_press == readchar.key.ENTER:
-            return ''.join(chars)
+            if not error_msg:
+                return ''.join(chars)
 
         elif len(repr(key_press)) == 3:
             new_chars = [*chars]
             new_chars.insert(cursor_pos, key_press)
-            if validation_func([*new_chars], key_press):
-                chars = [*new_chars]
-                cursor_pos += 1
+            error_msg = validation_func(new_chars, key_press)
+            chars = [*new_chars]
+            cursor_pos += 1
 
 
 def str_input(message, min_length, max_length):
     def str_validation(new_chars, char):
-        return len(new_chars) <= max_length
+        if len(new_chars) > max_length:
+            return "Too long"
+        if len(new_chars) < min_length:
+            return "Too short"
+        return ""
 
     return type_input(message, max_length + 2, str_validation)
 
@@ -146,11 +155,13 @@ def int_input(message, min_value, max_value):
         try:
             new_int = int(string)
         except:
-            new_int = 0
+            return "That's not a number!"
 
-        try:
-            return new_int <= max_value
-        except:
-            return False
+        if new_int > max_value:
+            return "Too high"
+        if new_int < min_value:
+            return "Too low"
 
-    return int(type_input(message, len(str(max_value)) + 2, int_validation))
+        return ""
+
+    return int(type_input(message, len(str(max_value)) + 10, int_validation))
