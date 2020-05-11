@@ -1,0 +1,26 @@
+{
+    "color": {
+        "black": "\u001b[30m",
+        "blue": "\u001b[34m",
+        "cyan": "\u001b[36m",
+        "green": "\u001b[32m",
+        "magenta": "\u001b[35m",
+        "red": "\u001b[31m",
+        "white": "\u001b[37m",
+        "yellow": "\u001b[33m"
+    },
+    "bg_color": {
+        "black": "\u001b[40m",
+        "blue": "\u001b[44m",
+        "cyan": "\u001b[46m",
+        "green": "\u001b[42m",
+        "magenta": "\u001b[45m",
+        "red": "\u001b[41m",
+        "white": "\u001b[47m",
+        "yellow": "\u001b[43m"
+    },
+    "bold": "\u001b[1m", 
+    "reversed": "\u001b[7m", 
+    "underline": "\u001b[4m",
+    "none": "\u001b[0m"
+}
