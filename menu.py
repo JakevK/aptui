@@ -69,12 +69,14 @@ def multi_choice(title, options, width=0):
 
 
 
-def type_input(message, min_length, max_length, validation_func=None):
+def type_input(message, width, validation_func=None):
     margin_top = (window_y - 3) // 2 - 1
-    margin_bottom = window_y - margin_top - 6
+    margin_bottom = window_y - margin_top - 8
 
     message_display = text.decorate(message, color="blue")
     message_display = text.center(message_display)
+
+    error_msg = ''
 
 
     chars = []
@@ -92,10 +94,7 @@ def type_input(message, min_length, max_length, validation_func=None):
         formatted_chars = ' ' + ''.join(formatted_chars)
         formatted_chars = text.center(
             formatted_chars, 
-            max(
-                len(chars), 
-                max_length + 2
-            )
+            width
         )
         formatted_chars = text.decorate(formatted_chars, underline=1)
         formatted_chars = text.center(formatted_chars)
@@ -104,6 +103,7 @@ def type_input(message, min_length, max_length, validation_func=None):
         print('\n' * margin_top)
         print(message_display + '\n')
         print(formatted_chars)
+        print('\n' + error_msg)
         print('\n' * margin_bottom)
 
 
@@ -125,16 +125,32 @@ def type_input(message, min_length, max_length, validation_func=None):
             return ''.join(chars)
 
         elif len(repr(key_press)) == 3:
-            if len(chars) < max_length and validation_func(chars, key_press):
-                chars.insert(cursor_pos, key_press)
+            new_chars = [*chars]
+            new_chars.insert(cursor_pos, key_press)
+            if validation_func([*new_chars], key_press):
+                chars = [*new_chars]
                 cursor_pos += 1
 
 
-def str_validation(chars, new_char):
-    return True
-
 def str_input(message, min_length, max_length):
-    return type_input(min_length, max_length)
+    def str_validation(new_chars, char):
+        return len(new_chars) <= max_length
+
+    return type_input(message, max_length + 2, str_validation)
 
 
 def int_input(message, min_value, max_value):
+    def int_validation(new_chars, char):
+        string = ''.join(new_chars)
+
+        try:
+            new_int = int(string)
+        except:
+            new_int = 0
+
+        try:
+            return new_int <= max_value
+        except:
+            return False
+
+    return int(type_input(message, len(str(max_value)) + 2, int_validation))
